@@ -1,10 +1,9 @@
 const ethSigUtil = require('eth-sig-util');
 const Wallet = require('ethereumjs-wallet').default;
 
-const { EIP712Domain, domainSeparator, hashTypedData } = require('../../helpers/eip712');
-const { getChainId } = require('../../helpers/chainid');
+const { EIP712Domain, domainSeparator } = require('../../helpers/eip712');
 
-const EIP712Verifier = artifacts.require('$EIP712Verifier');
+const EIP712 = artifacts.require('EIP712External');
 
 contract('EIP712', function (accounts) {
   const [mailTo] = accounts;
@@ -13,30 +12,25 @@ contract('EIP712', function (accounts) {
   const version = '1';
 
   beforeEach('deploying', async function () {
-    this.eip712 = await EIP712Verifier.new(name, version);
+    this.eip712 = await EIP712.new(name, version);
 
-    this.domain = {
-      name,
-      version,
-      chainId: await getChainId(),
-      verifyingContract: this.eip712.address,
-    };
+    // We get the chain id from the contract because Ganache (used for coverage) does not return the same chain id
+    // from within the EVM as from the JSON RPC interface.
+    // See https://github.com/trufflesuite/ganache-core/issues/515
+    this.chainId = await this.eip712.getChainId();
   });
 
   it('domain separator', async function () {
-    const expected = await domainSeparator(this.domain);
-
-    expect(await this.eip712.$_domainSeparatorV4()).to.equal(expected);
-  });
-
-  it('hash digest', async function () {
-    const structhash = web3.utils.randomHex(32);
-    const expected = await hashTypedData(this.domain, structhash);
-
-    expect(await this.eip712.$_hashTypedDataV4(structhash)).to.be.equal(expected);
+    expect(
+      await this.eip712.domainSeparator(),
+    ).to.equal(
+      await domainSeparator(name, version, this.chainId, this.eip712.address),
+    );
   });
 
   it('digest', async function () {
+    const chainId = this.chainId;
+    const verifyingContract = this.eip712.address;
     const message = {
       to: mailTo,
       contents: 'very interesting',
@@ -50,7 +44,7 @@ contract('EIP712', function (accounts) {
           { name: 'contents', type: 'string' },
         ],
       },
-      domain: this.domain,
+      domain: { name, version, chainId, verifyingContract },
       primaryType: 'Mail',
       message,
     };

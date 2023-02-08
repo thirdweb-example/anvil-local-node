@@ -10,7 +10,6 @@ const MinimalForwarder = artifacts.require('MinimalForwarder');
 const ContextMockCaller = artifacts.require('ContextMockCaller');
 
 const { shouldBehaveLikeRegularContext } = require('../utils/Context.behavior');
-const { getChainId } = require('../helpers/chainid');
 
 const name = 'MinimalForwarder';
 const version = '0.0.1';
@@ -23,7 +22,7 @@ contract('ERC2771Context', function (accounts) {
     this.domain = {
       name,
       version,
-      chainId: await getChainId(),
+      chainId: await web3.eth.getChainId(),
       verifyingContract: this.forwarder.address,
     };
     this.types = {

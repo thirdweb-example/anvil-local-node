@@ -3,7 +3,9 @@ const { makeInterfaceId } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 const INTERFACES = {
-  ERC165: ['supportsInterface(bytes4)'],
+  ERC165: [
+    'supportsInterface(bytes4)',
+  ],
   ERC721: [
     'balanceOf(address)',
     'ownerOf(uint256)',
@@ -15,8 +17,16 @@ const INTERFACES = {
     'safeTransferFrom(address,address,uint256)',
     'safeTransferFrom(address,address,uint256,bytes)',
   ],
-  ERC721Enumerable: ['totalSupply()', 'tokenOfOwnerByIndex(address,uint256)', 'tokenByIndex(uint256)'],
-  ERC721Metadata: ['name()', 'symbol()', 'tokenURI(uint256)'],
+  ERC721Enumerable: [
+    'totalSupply()',
+    'tokenOfOwnerByIndex(address,uint256)',
+    'tokenByIndex(uint256)',
+  ],
+  ERC721Metadata: [
+    'name()',
+    'symbol()',
+    'tokenURI(uint256)',
+  ],
   ERC1155: [
     'balanceOf(address,uint256)',
     'balanceOfBatch(address[],uint256[])',
@@ -36,7 +46,10 @@ const INTERFACES = {
     'revokeRole(bytes32,address)',
     'renounceRole(bytes32,address)',
   ],
-  AccessControlEnumerable: ['getRoleMember(bytes32,uint256)', 'getRoleMemberCount(bytes32)'],
+  AccessControlEnumerable: [
+    'getRoleMember(bytes32,uint256)',
+    'getRoleMemberCount(bytes32)',
+  ],
   Governor: [
     'name()',
     'version()',
@@ -78,8 +91,14 @@ const INTERFACES = {
     'castVoteBySig(uint256,uint8,uint8,bytes32,bytes32)',
     'castVoteWithReasonAndParamsBySig(uint256,uint8,string,bytes,uint8,bytes32,bytes32)',
   ],
-  GovernorTimelock: ['timelock()', 'proposalEta(uint256)', 'queue(address[],uint256[],bytes[],bytes32)'],
-  ERC2981: ['royaltyInfo(uint256,uint256)'],
+  GovernorTimelock: [
+    'timelock()',
+    'proposalEta(uint256)',
+    'queue(address[],uint256[],bytes[],bytes32)',
+  ],
+  ERC2981: [
+    'royaltyInfo(uint256,uint256)',
+  ],
 };
 
 const INTERFACE_IDS = {};
@@ -92,7 +111,7 @@ for (const k of Object.getOwnPropertyNames(INTERFACES)) {
   }
 }
 
-function shouldSupportInterfaces(interfaces = []) {
+function shouldSupportInterfaces (interfaces = []) {
   describe('ERC165', function () {
     beforeEach(function () {
       this.contractUnderTest = this.mock || this.token || this.holder || this.accessControl;

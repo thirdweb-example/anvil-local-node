@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/extensions/ERC20Votes.sol)
+// OpenZeppelin Contracts (last updated v4.8.1) (token/ERC20/extensions/ERC20Votes.sol)
 
 pragma solidity ^0.8.0;
 
-import "./ERC20Permit.sol";
+import "./draft-ERC20Permit.sol";
 import "../../../utils/math/Math.sol";
 import "../../../governance/utils/IVotes.sol";
 import "../../../utils/math/SafeCast.sol";
@@ -63,9 +63,7 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
      */
     function getVotes(address account) public view virtual override returns (uint256) {
         uint256 pos = _checkpoints[account].length;
-        unchecked {
-            return pos == 0 ? 0 : _checkpoints[account][pos - 1].votes;
-        }
+        return pos == 0 ? 0 : _checkpoints[account][pos - 1].votes;
     }
 
     /**
@@ -82,7 +80,7 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
 
     /**
      * @dev Retrieve the `totalSupply` at the end of `blockNumber`. Note, this value is the sum of all balances.
-     * It is NOT the sum of all the delegated votes!
+     * It is but NOT the sum of all the delegated votes!
      *
      * Requirements:
      *
@@ -132,9 +130,7 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
             }
         }
 
-        unchecked {
-            return high == 0 ? 0 : _unsafeAccess(ckpts, high - 1).votes;
-        }
+        return high == 0 ? 0 : _unsafeAccess(ckpts, high - 1).votes;
     }
 
     /**
@@ -197,7 +193,11 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
      *
      * Emits a {IVotes-DelegateVotesChanged} event.
      */
-    function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override {
         super._afterTokenTransfer(from, to, amount);
 
         _moveVotingPower(delegates(from), delegates(to), amount);
@@ -218,7 +218,11 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
         _moveVotingPower(currentDelegate, delegatee, delegatorBalance);
     }
 
-    function _moveVotingPower(address src, address dst, uint256 amount) private {
+    function _moveVotingPower(
+        address src,
+        address dst,
+        uint256 amount
+    ) private {
         if (src != dst && amount > 0) {
             if (src != address(0)) {
                 (uint256 oldWeight, uint256 newWeight) = _writeCheckpoint(_checkpoints[src], _subtract, amount);
@@ -239,19 +243,15 @@ abstract contract ERC20Votes is IVotes, ERC20Permit {
     ) private returns (uint256 oldWeight, uint256 newWeight) {
         uint256 pos = ckpts.length;
 
-        unchecked {
-            Checkpoint memory oldCkpt = pos == 0 ? Checkpoint(0, 0) : _unsafeAccess(ckpts, pos - 1);
+        Checkpoint memory oldCkpt = pos == 0 ? Checkpoint(0, 0) : _unsafeAccess(ckpts, pos - 1);
 
-            oldWeight = oldCkpt.votes;
-            newWeight = op(oldWeight, delta);
+        oldWeight = oldCkpt.votes;
+        newWeight = op(oldWeight, delta);
 
-            if (pos > 0 && oldCkpt.fromBlock == block.number) {
-                _unsafeAccess(ckpts, pos - 1).votes = SafeCast.toUint224(newWeight);
-            } else {
-                ckpts.push(
-                    Checkpoint({fromBlock: SafeCast.toUint32(block.number), votes: SafeCast.toUint224(newWeight)})
-                );
-            }
+        if (pos > 0 && oldCkpt.fromBlock == block.number) {
+            _unsafeAccess(ckpts, pos - 1).votes = SafeCast.toUint224(newWeight);
+        } else {
+            ckpts.push(Checkpoint({fromBlock: SafeCast.toUint32(block.number), votes: SafeCast.toUint224(newWeight)}));
         }
     }
 

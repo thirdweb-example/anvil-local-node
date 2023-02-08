@@ -1,6 +1,6 @@
 const format = require('../format-lines');
 
-const VALUE_SIZES = [224, 160];
+const VALUE_SIZES = [ 224, 160 ];
 
 const header = `\
 pragma solidity ^0.8.0;
@@ -185,8 +185,8 @@ function _insert(
         // Copying to memory is important here.
         ${opts.checkpointTypeName} memory last = _unsafeAccess(self, pos - 1);
 
-        // Checkpoint keys must be non-decreasing.
-        require(last.${opts.keyFieldName} <= key, "Checkpoint: decreasing keys");
+        // Checkpoints keys must be increasing.
+        require(last.${opts.keyFieldName} <= key, "Checkpoint: invalid key");
 
         // Update or push new checkpoint
         if (last.${opts.keyFieldName} == key) {
@@ -264,7 +264,7 @@ function _unsafeAccess(${opts.checkpointTypeName}[] storage self, uint256 pos)
 /* eslint-enable max-len */
 
 // OPTIONS
-const defaultOpts = size => ({
+const defaultOpts = (size) => ({
   historyTypeName: `Trace${size}`,
   checkpointTypeName: `Checkpoint${size}`,
   checkpointFieldName: '_checkpoints',
@@ -293,7 +293,11 @@ module.exports = format(
     legacyOperations(LEGACY_OPTS),
     common(LEGACY_OPTS),
     // New flavors
-    ...OPTS.flatMap(opts => [types(opts), operations(opts), common(opts)]),
+    ...OPTS.flatMap(opts => [
+      types(opts),
+      operations(opts),
+      common(opts),
+    ]),
   ],
   '}',
 );

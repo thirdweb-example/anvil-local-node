@@ -31,7 +31,11 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
      * @dev Initializes an upgradeable proxy managed by `_admin`, backed by the implementation at `_logic`, and
      * optionally initialized with `_data` as explained in {ERC1967Proxy-constructor}.
      */
-    constructor(address _logic, address admin_, bytes memory _data) payable ERC1967Proxy(_logic, _data) {
+    constructor(
+        address _logic,
+        address admin_,
+        bytes memory _data
+    ) payable ERC1967Proxy(_logic, _data) {
         _changeAdmin(admin_);
     }
 
@@ -55,8 +59,7 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
      * https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.
      * `0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103`
      */
-    function admin() external payable ifAdmin returns (address admin_) {
-        _requireZeroValue();
+    function admin() external ifAdmin returns (address admin_) {
         admin_ = _getAdmin();
     }
 
@@ -69,8 +72,7 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
      * https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.
      * `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc`
      */
-    function implementation() external payable ifAdmin returns (address implementation_) {
-        _requireZeroValue();
+    function implementation() external ifAdmin returns (address implementation_) {
         implementation_ = _implementation();
     }
 
@@ -81,8 +83,7 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
      *
      * NOTE: Only the admin can call this function. See {ProxyAdmin-changeProxyAdmin}.
      */
-    function changeAdmin(address newAdmin) external payable virtual ifAdmin {
-        _requireZeroValue();
+    function changeAdmin(address newAdmin) external virtual ifAdmin {
         _changeAdmin(newAdmin);
     }
 
@@ -91,8 +92,7 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
      *
      * NOTE: Only the admin can call this function. See {ProxyAdmin-upgrade}.
      */
-    function upgradeTo(address newImplementation) external payable ifAdmin {
-        _requireZeroValue();
+    function upgradeTo(address newImplementation) external ifAdmin {
         _upgradeToAndCall(newImplementation, bytes(""), false);
     }
 
@@ -120,13 +120,5 @@ contract TransparentUpgradeableProxy is ERC1967Proxy {
     function _beforeFallback() internal virtual override {
         require(msg.sender != _getAdmin(), "TransparentUpgradeableProxy: admin cannot fallback to proxy target");
         super._beforeFallback();
-    }
-
-    /**
-     * @dev To keep this contract fully transparent, all `ifAdmin` functions must be payable. This helper is here to
-     * emulate some proxy functions being non-payable while still allowing value to pass through.
-     */
-    function _requireZeroValue() private {
-        require(msg.value == 0);
     }
 }
