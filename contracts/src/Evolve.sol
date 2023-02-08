@@ -10,10 +10,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Evolve is ERC1155LazyMint, Permissions {
-    // Internal state to the contract
-    string private greeting;
-    // Any `bytes32` value is a valid role. You can create roles by defining them like this.
-    bytes32 public constant OWNER = keccak256("owner");
     // Define a variable to store the access key smart contract
     ERC1155LazyMint public accessKeysCollection;
 
