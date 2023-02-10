@@ -1,19 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.13;
 
 // thirdweb ContractKit - Building blocks for common smart contract patterns (some examples below)
 import "@thirdweb-dev/contracts/base/ERC1155LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/Permissions.sol"; // Extension contracts
 
 // OpenZeppelin Contracts - More building blocks and utility functions (some examples below)
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Evolve is ERC1155LazyMint, Permissions {
-    // Define a variable to store the access key smart contract
-    ERC1155LazyMint public accessKeysCollection;
+    /*//////////////////////////////////////////////////////////////
+                                 ERRORS
+    //////////////////////////////////////////////////////////////*/
 
-    event NFTEvolved(address reciever, uint256 tokenId, uint256 amount);
+    error InsufficientBalance(uint256 _tokenId, uint256 requiredBalance);
+    error OnlyFirstLevelClaimable();
+    error NoHigherLevel(uint256 _tokenId);
+
+    /*//////////////////////////////////////////////////////////////
+                                 EVENTS
+    //////////////////////////////////////////////////////////////*/
+
+    event NFTBurned(uint256 _tokenId, uint256 _amount);
+    event NFTEvolved(address _reciever, uint256 _tokenId);
 
     // Constructor - run when contract is deployed
     constructor(
@@ -31,32 +40,25 @@ contract Evolve is ERC1155LazyMint, Permissions {
         uint256 _quantity
     ) public view override {
         // Check if the claimer has the access key
-        if (_tokenId > 0) {
-            require(
-                balanceOf[_claimer][_tokenId - 1] >= _quantity,
-                "Rejected: You do not own the pre-evolved NFT(s)"
-            );
-        }
+        if (_tokenId != 0) revert OnlyFirstLevelClaimable();
     }
 
-    function _transferTokensOnClaim(
-        address _receiver,
-        uint256 _tokenId,
-        uint256 _quantity
-    ) internal override {
-        if (_tokenId == 0) {
-            super._transferTokensOnClaim(_receiver, _tokenId, _quantity);
-        } else {
-            // First, burn the pre-evolve NFt from the user's wallet
-            _burn(
-                _receiver, // Burn from the receiver
-                _tokenId - 1, // Token ID
-                _quantity // Amount to burn is the quantity they are claiming
-            );
+    function evolve(uint256 _tokenId) public {
+        if (nextTokenIdToMint() <= _tokenId + 1) revert NoHigherLevel(_tokenId);
+        uint256 _requiredBalance = Math.log2((_tokenId + 1) * 100);
+        if (balanceOf[msg.sender][_tokenId] < _requiredBalance)
+            revert InsufficientBalance(_tokenId, _requiredBalance);
+        _burn(msg.sender, _tokenId, _requiredBalance);
+        emit NFTBurned(_tokenId, _requiredBalance);
+        _mint(msg.sender, _tokenId + 1, 1, "");
+        emit NFTEvolved(msg.sender, _tokenId + 1);
+    }
 
-            // Use the rest of the inherited claim function logic
-            super._transferTokensOnClaim(_receiver, _tokenId, _quantity);
-            emit NFTEvolved(_receiver, _tokenId, _quantity);
-        }
+    function requiredNFTAmount(uint256 _tokenId)
+        public
+        pure
+        returns (uint256 _requiredNFTAmount)
+    {
+        _requiredNFTAmount = Math.log2((_tokenId + 1) * 100);
     }
 }

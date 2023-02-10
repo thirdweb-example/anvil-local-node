@@ -117,3 +117,53 @@
 .logo img {
   filter: invert(1);
 }
+
+.nftContainer {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.outerContainer {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.btnHero {
+  margin: auto;
+  padding: 1rem;
+  width: 250px;
+}
+
+.nftCollection {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.descriptionContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quantity {
+  border-radius: 0.5em;
+  border: 2px solid #262627;
+  justify-content: space-evenly;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5em;
+  padding: 0.1rem 1.25em;
+  margin: 0.5em;
+}
+
+.quantityContainer {
+  display: flex;
+  flex-direction: row;
+}
