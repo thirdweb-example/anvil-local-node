@@ -5,15 +5,12 @@ pragma solidity ^0.8.13;
 import "@thirdweb-dev/contracts/base/ERC1155LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/Permissions.sol"; // Extension contracts
 
-// OpenZeppelin Contracts - More building blocks and utility functions (some examples below)
-import "@openzeppelin/contracts/utils/math/Math.sol";
-
 contract Evolve is ERC1155LazyMint, Permissions {
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
 
-    error InsufficientBalance(uint256 _tokenId, uint256 requiredBalance);
+    error InsufficientBalance(uint256 _tokenId);
     error OnlyFirstLevelClaimable();
     error NoHigherLevel(uint256 _tokenId);
 
@@ -38,27 +35,18 @@ contract Evolve is ERC1155LazyMint, Permissions {
         address _claimer,
         uint256 _tokenId,
         uint256 _quantity
-    ) public view override {
+    ) public pure override {
         // Check if the claimer has the access key
         if (_tokenId != 0) revert OnlyFirstLevelClaimable();
     }
 
     function evolve(uint256 _tokenId) public {
         if (nextTokenIdToMint() <= _tokenId + 1) revert NoHigherLevel(_tokenId);
-        uint256 _requiredBalance = Math.log2((_tokenId + 1) * 100);
-        if (balanceOf[msg.sender][_tokenId] < _requiredBalance)
-            revert InsufficientBalance(_tokenId, _requiredBalance);
-        _burn(msg.sender, _tokenId, _requiredBalance);
-        emit NFTBurned(_tokenId, _requiredBalance);
+        if (balanceOf[msg.sender][_tokenId] < 1)
+            revert InsufficientBalance(_tokenId);
+        _burn(msg.sender, _tokenId, 1);
+        emit NFTBurned(_tokenId, 1);
         _mint(msg.sender, _tokenId + 1, 1, "");
         emit NFTEvolved(msg.sender, _tokenId + 1);
-    }
-
-    function requiredNFTAmount(uint256 _tokenId)
-        public
-        pure
-        returns (uint256 _requiredNFTAmount)
-    {
-        _requiredNFTAmount = Math.log2((_tokenId + 1) * 100);
     }
 }
