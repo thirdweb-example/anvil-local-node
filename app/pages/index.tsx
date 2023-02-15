@@ -2,19 +2,14 @@ import {
   useContract,
   Web3Button,
   useAddress,
-  useTotalCount,
   useOwnedNFTs,
   ThirdwebNftMedia,
   useNFTs,
-  useNFTBalance,
-  useContractRead,
 } from "@thirdweb-dev/react";
-import { useEffect, useMemo, useState } from "react";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 import { evolveContract } from "../utils/constants";
 import { BigNumber } from "ethers";
-import { NFT } from "@thirdweb-dev/sdk";
 
 const Home: NextPage = () => {
   // Currently connected wallet address
