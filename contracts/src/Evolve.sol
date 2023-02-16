@@ -18,8 +18,8 @@ contract Evolve is ERC1155LazyMint, Permissions {
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
 
-    event NFTBurned(uint256 _tokenId, uint256 _amount);
-    event NFTEvolved(address _reciever, uint256 _tokenId);
+    event NFTBurned(uint256 indexed _tokenId, uint256 _amount);
+    event NFTEvolved(address indexed _reciever, uint256 indexed _tokenId);
 
     // Constructor - run when contract is deployed
     constructor(
@@ -41,12 +41,12 @@ contract Evolve is ERC1155LazyMint, Permissions {
     }
 
     function evolve(uint256 _tokenId) public {
-        if (nextTokenIdToMint() <= _tokenId + 1) revert NoHigherLevel(_tokenId);
+        if (_tokenId >= nextTokenIdToMint() - 1) revert NoHigherLevel(_tokenId);
         if (balanceOf[msg.sender][_tokenId] < 1)
             revert InsufficientBalance(_tokenId);
         _burn(msg.sender, _tokenId, 1);
         emit NFTBurned(_tokenId, 1);
         _mint(msg.sender, _tokenId + 1, 1, "");
-        emit NFTEvolved(msg.sender, _tokenId + 1);
+        emit NFTEvolved(msg.sender, _tokenId);
     }
 }
