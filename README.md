@@ -13,6 +13,8 @@ In this template, we go through the motions of creating a custom contract using 
 - yarn
 - npm
 
+### Getting Started
+
 Create a local instance of this repository by running the commands:
 
 ```bash
