@@ -3,10 +3,10 @@
 Create a project using this example:
 
 ```bash
-npx thirdweb create --contract --template forge-starter
+npx thirdweb create --contract --template evolve
 ```
 
-You can start editing the page by modifying `contracts/Contract.sol`.
+You can start editing the page by modifying `contracts/Evolve.sol`.
 
 To add functionality to your contracts, you can use the `@thirdweb-dev/contracts` package which provides base contracts and extensions to inherit. The package is already installed with this project. Head to our [Contracts Extensions Docs](https://portal.thirdweb.com/thirdweb-deploy/contract-extensions) to learn more.
 
@@ -15,9 +15,7 @@ To add functionality to your contracts, you can use the `@thirdweb-dev/contracts
 After any changes to the contract, run:
 
 ```bash
-npm run build
-# or
-yarn build
+forge build
 ```
 
 to compile your contracts. This will also detect the [Contracts Extensions Docs](https://portal.thirdweb.com/thirdweb-deploy/contract-extensions) detected on your contract.
@@ -27,9 +25,7 @@ to compile your contracts. This will also detect the [Contracts Extensions Docs]
 When you're ready to deploy your contracts, just run one of the following command to deploy you're contracts:
 
 ```bash
-npm run deploy
-# or
-yarn deploy
+npx thirdweb deploy
 ```
 
 ## Releasing Contracts
@@ -37,9 +33,7 @@ yarn deploy
 If you want to release a version of your contracts publicly, you can use one of the followings command:
 
 ```bash
-npm run release
-# or
-yarn release
+npx thirdweb release
 ```
 
 ## Join our Discord!
