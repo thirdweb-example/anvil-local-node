@@ -93,7 +93,7 @@ const Home: NextPage = () => {
             </div>
           ) : (
             <div>
-              <h1>you don't own any NFTs</h1>
+              <h1>you do not own any NFTs</h1>
             </div>
           )
         ) : (
