@@ -4,11 +4,11 @@ import "../styles/globals.css";
 import Head from "next/head";
 
 // This is the chainId your dApp will work on.
-const chainId = ChainId.Localhost;
+const activeChain = ChainId.Localhost;
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider desiredChainId={chainId}>
+    <ThirdwebProvider activeChain={activeChain}>
       <Head>
         <title>thirdweb NFT Burn to Evolve Customizable Page</title>
       </Head>
