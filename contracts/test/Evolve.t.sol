@@ -30,11 +30,13 @@ contract EvolveTest is Test {
     address claimer;
 
     function setUp() public {
+        // instance of our Evolve contract
         evolve = new Evolve("Evolve", "EVO", address(this), 0);
+        // dummy address to claim & evolve from
         claimer = makeAddr("claimer");
-        // amount = 100 * 10**evolve.decimals();
 
         // Lazy mint 3 ERC1155 token "levels"
+        // pranks make it seem as if the contract calls are being sent from the address passed as argument
         vm.startPrank(address(this));
         evolve.lazyMint(1, "level_1", "");
         evolve.lazyMint(1, "level_2", "");
@@ -42,6 +44,7 @@ contract EvolveTest is Test {
         vm.stopPrank();
     }
 
+    // check the first level is claim-able
     function test_claimTokenIdZero(uint256 quantity) public {
         vm.assume(quantity > 0);
         vm.startPrank(claimer);
@@ -63,6 +66,7 @@ contract EvolveTest is Test {
         vm.stopPrank();
     }
 
+    // test that NFT burns when evolved and the next NFT is minted to the correct address
     function test_evolveWithPrevToken() public {
         vm.startPrank(claimer);
         evolve.claim(claimer, 0, 1);
@@ -78,6 +82,7 @@ contract EvolveTest is Test {
         vm.stopPrank();
     }
 
+    // test that evolve is not possible if nft is not owned
     function test_evolveWithoutPrevToken(uint256 tokenId) public {
         vm.assume(tokenId < evolve.nextTokenIdToMint() - 1);
         vm.startPrank(claimer);
@@ -87,6 +92,7 @@ contract EvolveTest is Test {
         evolve.evolve(tokenId);
     }
 
+    // test you cannot evolve to a higher level than is already lazy minted (i.e. undefined & does not exist)
     function test_evolveHigherTokenId() public {
         vm.startPrank(claimer);
         uint256 tokenId = evolve.nextTokenIdToMint() - 1;

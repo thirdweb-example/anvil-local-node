@@ -31,6 +31,12 @@ contract Evolve is ERC1155LazyMint, Permissions {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
+    /**
+     * @notice Only allow claiming the first level NFT with tokenId 0
+     * @param _claimer address attempting to claim
+     * @param _tokenId
+     * @param _quantity amount of NFTs being claimed
+     */
     function verifyClaim(
         address _claimer,
         uint256 _tokenId,
@@ -40,6 +46,10 @@ contract Evolve is ERC1155LazyMint, Permissions {
         if (_tokenId != 0) revert OnlyFirstLevelClaimable();
     }
 
+    /**
+     * @notice Evolve the NFT by minting the next levels & burning the current level NFT
+     * @param _tokenID
+     */
     function evolve(uint256 _tokenId) public {
         if (_tokenId >= nextTokenIdToMint() - 1) revert NoHigherLevel(_tokenId);
         if (balanceOf[msg.sender][_tokenId] < 1)

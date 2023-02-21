@@ -14,8 +14,11 @@ import { BigNumber } from "ethers";
 const Home: NextPage = () => {
   // Currently connected wallet address
   const address = useAddress();
+
+  // Retrieve your deployed Evolve NFT contract
   const { contract } = useContract(evolveContract);
 
+  // Hook to get the NFTs on the contract
   const { data: nfts, isLoading } = useNFTs(contract, { start: 0, count: 100 });
 
   // Hook to check if the user has any NFT(s)
@@ -29,6 +32,7 @@ const Home: NextPage = () => {
       <div className={styles.nftCollection}>
         {address ? (
           !nftsLoading && nfts ? (
+            // If a wallet is connected & there are NFTs on the contract, display them
             nfts.map((nft) => (
               <div
                 className={styles.nftContainer}
@@ -47,6 +51,7 @@ const Home: NextPage = () => {
                       ) ? (
                         <p>
                           {
+                            // if they own the nft, display how many the user owns
                             ownedNfts?.find(
                               (ownedNft) =>
                                 ownedNft.metadata.id === nft.metadata.id
@@ -59,24 +64,27 @@ const Home: NextPage = () => {
                     </div>
                   </div>
                 </div>
-                {ownedNfts?.find(
-                  (ownedNft) => ownedNft.metadata.id === nft.metadata.id
-                ) && (
-                  <div className={styles.btnHero}>
-                    <Web3Button
-                      contractAddress={evolveContract}
-                      action={(contract) => {
-                        console.log(nft.metadata.id);
-                        return contract.call(
-                          "evolve",
-                          BigNumber.from(nft.metadata.id)
-                        );
-                      }}
-                    >
-                      Evolve your {nft?.metadata?.name?.toString()}
-                    </Web3Button>
-                  </div>
-                )}
+                {
+                  // if they own the NFT, give them the ability to evolve the NFT
+                  ownedNfts?.find(
+                    (ownedNft) => ownedNft.metadata.id === nft.metadata.id
+                  ) && (
+                    <div className={styles.btnHero}>
+                      <Web3Button
+                        contractAddress={evolveContract}
+                        action={(contract) => {
+                          console.log(nft.metadata.id);
+                          return contract.call(
+                            "evolve",
+                            BigNumber.from(nft.metadata.id)
+                          );
+                        }}
+                      >
+                        Evolve your {nft?.metadata?.name?.toString()}
+                      </Web3Button>
+                    </div>
+                  )
+                }
               </div>
             ))
           ) : nftsLoading ? (
