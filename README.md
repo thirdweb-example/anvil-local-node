@@ -18,7 +18,7 @@ In this template, we go through the motions of creating a custom contract using 
 Create a local instance of this repository by running the commands:
 
 ```bash
-git clone https://github.com/thirdweb-example/anvil-local-node.git
+npx thirdweb create --template anvil-local-node
 cd anvil-local-node
 ```
 
