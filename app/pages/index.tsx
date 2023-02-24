@@ -5,6 +5,7 @@ import {
   useOwnedNFTs,
   ThirdwebNftMedia,
   useNFTs,
+  useClaimNFT,
 } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
@@ -26,6 +27,8 @@ const Home: NextPage = () => {
     contract,
     address
   );
+
+  const { mutate: claimNft } = useClaimNFT(contract);
 
   return (
     <div className={styles.outerContainer}>
@@ -105,7 +108,13 @@ const Home: NextPage = () => {
       <div className={styles.btnHero}>
         <Web3Button
           contractAddress={evolveContract}
-          action={(contract) => contract.erc1155.claim(0, 1)}
+          action={() =>
+            claimNft({
+              to: address,
+              quantity: 1,
+              tokenId: 0,
+            })
+          }
         >
           Mint an NFT!
         </Web3Button>
