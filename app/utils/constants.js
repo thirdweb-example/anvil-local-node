@@ -1,2 +1,2 @@
 // Replace with your own contract address
-export const evolveContract = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+export const evolveContract = "0x40bB090B951452cD245a9d5D1E3Fd2283Ae11776";

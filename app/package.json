@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@thirdweb-dev/auth": "^3.0.3",
+    "@thirdweb-dev/chains": "^0.1.5",
     "@thirdweb-dev/react": "^3.9.2",
     "@thirdweb-dev/sdk": "^3.9",
     "ethers": "^5.7.2",
